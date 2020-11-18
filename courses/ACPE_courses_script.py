@@ -41,7 +41,7 @@ course_data = {'Level_Code': '', 'University': 'Australian College of Physical E
                'Availability': '', 'Description': '', 'Career_Outcomes': '', 'Online': '', 'Offline': '',
                'Distance': 'no', 'Face_to_Face': '', 'Blended': '', 'Remarks': ''}
 
-possible_cities = {'online': 'Online', 'mixed': 'Online', 'carlton': 'Carlton'}
+possible_cities = {'online': 'Online', 'mixed': 'Online', 'sydney': 'Sydney'}
 
 possible_languages = {'Japanese': 'Japanese', 'French': 'French', 'Italian': 'Italian', 'Korean': 'Korean',
                       'Indonesian': 'Indonesian', 'Chinese': 'Chinese', 'Spanish': 'Spanish'}
@@ -132,10 +132,12 @@ for each_url in course_links_file:
                 course_data['Offline'] = 'no'
             if 'blended' in study_mode_text:
                 course_data['Blended'] = 'yes'
+                actual_cities.append('mixed')
             else:
                 course_data['Blended'] = 'no'
             if 'online' in study_mode_text:
                 course_data['Online'] = 'yes'
+                actual_cities.append('online')
             else:
                 course_data['Online'] = 'no'
             print('STUDY MODE: OFFLINE / FACE TO FACE: ' + course_data['Offline'] + '/' + course_data['Face_to_Face'] +
@@ -163,3 +165,36 @@ for each_url in course_links_file:
                 career_list = ' / '.join(career_list)
                 course_data['Career_Outcomes'] = career_list
                 print('CAREER OUTCOMES: ', course_data['Career_Outcomes'])
+
+    # CITY
+    actual_cities.append('sydney')
+
+    # duplicating entries with multiple cities for each city
+    for i in actual_cities:
+        course_data['City'] = possible_cities[i]
+        course_data_all.append(copy.deepcopy(course_data))
+    del actual_cities
+
+    # TABULATE THE DATA
+    desired_order_list = ['Level_Code', 'University', 'City', 'Course', 'Faculty', 'Int_Fees', 'Local_Fees',
+                          'Currency', 'Currency_Time', 'Duration', 'Duration_Time', 'Full_Time', 'Part_Time',
+                          'Prerequisite_1', 'Prerequisite_2', 'Prerequisite_3', 'Prerequisite_1_grade',
+                          'Prerequisite_2_grade', 'Prerequisite_3_grade', 'Website', 'Course_Lang', 'Availability',
+                          'Description', 'Career_Outcomes', 'Country', 'Online', 'Offline', 'Distance',
+                          'Face_to_Face', 'Blended', 'Remarks']
+
+    course_dict_keys = set().union(*(d.keys() for d in course_data_all))
+
+    with open(csv_file, 'w', encoding='utf-8', newline='') as output_file:
+        dict_writer = csv.DictWriter(output_file, course_dict_keys)
+        dict_writer.writeheader()
+        dict_writer.writerows(course_data_all)
+
+    with open(csv_file, 'r', encoding='utf-8') as infile, open('ACPE_courses_ordered.csv', 'w', encoding='utf-8',
+                                                               newline='') as outfile:
+        writer = csv.DictWriter(outfile, fieldnames=desired_order_list)
+        # reorder the header first
+        writer.writeheader()
+        for row in csv.DictReader(infile):
+            # writes the reordered rows to the new file
+            writer.writerow(row)
