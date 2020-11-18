@@ -91,3 +91,19 @@ for each_url in course_links_file:
             else:
                 course_data['Course_Lang'] = 'English'
         print('COURSE LANGUAGE: ', course_data['Course_Lang'])
+
+    # DURATION
+    dura_title = soup.find('strong', text=re.compile('Course duration'))
+    if dura_title:
+        duration = dura_title.find_next_sibling('small')
+        if duration:
+            converted_duration = dura.convert_duration(duration.get_text().strip())
+            if converted_duration is not None:
+                duration_l = list(converted_duration)
+                if duration_l[0] == 1 and 'Years' in duration_l[1]:
+                    duration_l[1] = 'Year'
+                if duration_l[0] == 1 and 'Months' in duration_l[1]:
+                    duration_l[1] = 'Month'
+                course_data['Duration'] = duration_l[0]
+                course_data['Duration_Time'] = duration_l[1]
+                print('COURSE DURATION: ', str(duration_l[0]) + ' / ' + duration_l[1])
