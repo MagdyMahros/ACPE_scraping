@@ -39,7 +39,7 @@ course_data = {'Level_Code': '', 'University': 'Australian College of Physical E
                'Prerequisite_1': '', 'Prerequisite_2': 'IELTS', 'Prerequisite_3': '', 'Prerequisite_1_grade': '',
                'Prerequisite_2_grade': '6.5', 'Prerequisite_3_grade': '', 'Website': '', 'Course_Lang': '',
                'Availability': '', 'Description': '', 'Career_Outcomes': '', 'Online': '', 'Offline': '',
-               'Distance': '', 'Face_to_Face': '', 'Blended': '', 'Remarks': ''}
+               'Distance': 'no', 'Face_to_Face': '', 'Blended': '', 'Remarks': ''}
 
 possible_cities = {'online': 'Online', 'mixed': 'Online', 'carlton': 'Carlton'}
 
@@ -117,3 +117,27 @@ for each_url in course_links_file:
                 course_data['Duration'] = duration_l[0]
                 course_data['Duration_Time'] = duration_l[1]
                 print('COURSE DURATION: ', str(duration_l[0]) + ' / ' + duration_l[1])
+
+    # STUDY MODE
+    study_mode_title = dura_title = soup.find('strong', text=re.compile('Study mode'))
+    if study_mode_title:
+        study_mode = study_mode_title.find_next_sibling('small')
+        if study_mode:
+            study_mode_text = study_mode.get_text().lower().strip()
+            if 'face to face' in study_mode_text:
+                course_data['Face_to_Face'] = 'yes'
+                course_data['Offline'] = 'yes'
+            else:
+                course_data['Face_to_Face'] = 'no'
+                course_data['Offline'] = 'no'
+            if 'blended' in study_mode_text:
+                course_data['Blended'] = 'yes'
+            else:
+                course_data['Blended'] = 'no'
+            if 'online' in study_mode_text:
+                course_data['Online'] = 'yes'
+            else:
+                course_data['Online'] = 'no'
+            print('STUDY MODE: OFFLINE / FACE TO FACE: ' + course_data['Offline'] + '/' + course_data['Face_to_Face'] +
+                  ' BLENDED: ' + course_data['Blended'] + ' ONLINE: ' + course_data['Online'] + ' DISTANCE: ' +
+                  course_data['Distance'])
