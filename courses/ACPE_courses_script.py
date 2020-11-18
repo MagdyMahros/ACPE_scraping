@@ -97,7 +97,17 @@ for each_url in course_links_file:
     if dura_title:
         duration = dura_title.find_next_sibling('small')
         if duration:
-            converted_duration = dura.convert_duration(duration.get_text().strip())
+            duration_text = duration.get_text().lower().strip()
+            if 'full time' in duration_text or 'full-time' in duration_text:
+                course_data['Full_Time'] = 'yes'
+            else:
+                course_data['Full_Time'] = 'no'
+            if 'part time' in duration_text or 'part-time' in duration_text:
+                course_data['Part_Time'] = 'yes'
+            else:
+                course_data['Part_Time'] = 'no'
+            print('FULL TIME/PART TIME: ', course_data['Full_Time'] + ' / ' + course_data['Part_Time'])
+            converted_duration = dura.convert_duration(duration_text)
             if converted_duration is not None:
                 duration_l = list(converted_duration)
                 if duration_l[0] == 1 and 'Years' in duration_l[1]:
