@@ -149,3 +149,17 @@ for each_url in course_links_file:
         if description:
             course_data['Description'] = description.get_text().strip()
             print('DESCRIPTION: ', course_data['Description'])
+
+    # CAREER OUTCOMES
+    career_title = soup.find('h3', text=re.compile('Career opportunities', re.IGNORECASE))
+    if career_title:
+        career_list = []
+        career_ul = career_title.find_next('ul', class_='iconlist')
+        if career_ul:
+            career_li = career_ul.find_all('li')
+            if career_li:
+                for li in career_li:
+                    career_list.append(li.get_text().strip())
+                career_list = ' / '.join(career_list)
+                course_data['Career_Outcomes'] = career_list
+                print('CAREER OUTCOMES: ', course_data['Career_Outcomes'])
