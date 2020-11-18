@@ -141,3 +141,11 @@ for each_url in course_links_file:
             print('STUDY MODE: OFFLINE / FACE TO FACE: ' + course_data['Offline'] + '/' + course_data['Face_to_Face'] +
                   ' BLENDED: ' + course_data['Blended'] + ' ONLINE: ' + course_data['Online'] + ' DISTANCE: ' +
                   course_data['Distance'])
+
+    # DESCRIPTION
+    desc_title = soup.find('h3', text=re.compile('About the course', re.IGNORECASE))
+    if desc_title:
+        description = desc_title.find_next('p')
+        if description:
+            course_data['Description'] = description.get_text().strip()
+            print('DESCRIPTION: ', course_data['Description'])
